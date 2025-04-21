@@ -100,7 +100,7 @@
     }
 
     .tile {
-      background-image: url('baddie.png');
+      background-image: url('baddie.jpg');
       background-size: var(--bg-size);
       cursor: pointer;
       transition: transform 0.2s ease, box-shadow 0.2s;
@@ -138,7 +138,7 @@
 </head>
 <body>
   <h1>💾 Floppy Puzzle Mania 💾</h1>
-  <img src="baddie.png" alt="Puzzle Preview" class="preview" id="preview"/>
+  <img src="baddie.jpg" alt="Puzzle Preview" class="preview" id="preview"/>
 
   <div class="controls">
     <select id="difficulty" onchange="restartPuzzle()">
@@ -174,23 +174,23 @@
     let moves = 0;
     let isSolving = false;
 
-    // Load Poppins font
+    
     const fontLink = document.createElement('link');
     fontLink.href = 'https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap';
     fontLink.rel = 'stylesheet';
     document.head.appendChild(fontLink);
 
-    // Image load error handling
+    
     previewImage.onerror = () => {
       alert("Error: 'baddie.png' not found. Ensure it's in the same directory as the HTML file.");
     };
 
-    // Audio load error handling
+    
     moveSound.onerror = () => {
       console.warn("Warning: 'move.mp3' not found. Ensure it's in the same directory.");
     };
 
-    // Manage best scores
+    
     function loadBest() {
       const best = JSON.parse(localStorage.getItem(`baddiePuzzleBest${size}`)) || { time: Infinity, moves: Infinity };
       bestDisplay.textContent = best.time === Infinity ? 'Best: -' : `Best: ${best.time}s, ${best.moves}m`;
@@ -243,9 +243,9 @@
       }
       const emptyTile = tiles.find(tile => tile.classList.contains('empty'));
       tiles = [...movable, emptyTile];
-      // Ensure solvable configuration
+      
       if (!isSolvable()) {
-        // Swap two tiles to make it solvable
+        
         if (movable.length >= 2) {
           [movable[0], movable[1]] = [movable[1], movable[0]];
           tiles = [...movable, emptyTile];
@@ -253,7 +253,7 @@
       }
     }
 
-    // Check if puzzle is solvable
+    
     function isSolvable() {
       let inversionCount = 0;
       const flatTiles = tiles.map(tile => parseInt(tile.dataset.id));
@@ -294,8 +294,8 @@
       [tiles[tileId], tiles[emptyIndex]] = [tiles[emptyIndex], tiles[tileId]];
       moves++;
       movesDisplay.textContent = `Moves: ${moves}`;
-      // Play move sound
-      moveSound.currentTime = 0; // Reset to prevent overlap
+      
+      moveSound.currentTime = 0; 
       moveSound.play().catch(err => console.warn("Audio play failed:", err));
       render();
     }
