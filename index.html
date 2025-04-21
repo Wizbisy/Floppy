@@ -157,6 +157,7 @@
   </div>
 
   <div class="puzzle-container" id="puzzle"></div>
+  <audio id="moveSound" src="move.mp3"></audio>
 
   <script>
     const container = document.getElementById('puzzle');
@@ -165,6 +166,7 @@
     const bestDisplay = document.getElementById('best');
     const difficultySelect = document.getElementById('difficulty');
     const previewImage = document.getElementById('preview');
+    const moveSound = document.getElementById('moveSound');
     let size = parseInt(difficultySelect.value);
     let tiles = [];
     let timer = null;
@@ -181,6 +183,11 @@
     // Image load error handling
     previewImage.onerror = () => {
       alert("Error: 'baddie.png' not found. Ensure it's in the same directory as the HTML file.");
+    };
+
+    // Audio load error handling
+    moveSound.onerror = () => {
+      console.warn("Warning: 'move.mp3' not found. Ensure it's in the same directory.");
     };
 
     // Manage best scores
@@ -236,6 +243,33 @@
       }
       const emptyTile = tiles.find(tile => tile.classList.contains('empty'));
       tiles = [...movable, emptyTile];
+      // Ensure solvable configuration
+      if (!isSolvable()) {
+        // Swap two tiles to make it solvable
+        if (movable.length >= 2) {
+          [movable[0], movable[1]] = [movable[1], movable[0]];
+          tiles = [...movable, emptyTile];
+        }
+      }
+    }
+
+    // Check if puzzle is solvable
+    function isSolvable() {
+      let inversionCount = 0;
+      const flatTiles = tiles.map(tile => parseInt(tile.dataset.id));
+      for (let i = 0; i < flatTiles.length - 1; i++) {
+        for (let j = i + 1; j < flatTiles.length; j++) {
+          if (flatTiles[i] && flatTiles[j] && flatTiles[i] > flatTiles[j]) {
+            inversionCount++;
+          }
+        }
+      }
+      const emptyRow = Math.floor(getEmptyIndex() / size) + 1;
+      if (size % 2 === 1) {
+        return inversionCount % 2 === 0;
+      } else {
+        return (inversionCount + emptyRow) % 2 === 0;
+      }
     }
 
     function render() {
@@ -260,6 +294,9 @@
       [tiles[tileId], tiles[emptyIndex]] = [tiles[emptyIndex], tiles[tileId]];
       moves++;
       movesDisplay.textContent = `Moves: ${moves}`;
+      // Play move sound
+      moveSound.currentTime = 0; // Reset to prevent overlap
+      moveSound.play().catch(err => console.warn("Audio play failed:", err));
       render();
     }
 
